@@ -1,8 +1,11 @@
-<script setup >
-import { state } from './socket.js'
+<script setup lang="ts">
+import { initSocket } from './socket.ts'
+import {ref} from "vue";
+
+initSocket()
 </script>
 <template>
-  <div>hello {{ state }}</div>
+  <RouterView/>
 </template>
 
 <style scoped>

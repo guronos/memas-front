@@ -12,6 +12,7 @@ import {socket} from "@/socket.ts";
 const createRoom = () => {
   const uid = getUUID();
   socket.emit('createRoom', '5991083c-67a3-4fff-abfd-b74efba33b3b');
+  // socket.emit('events', { test: '42' })
 }
 
 </script>

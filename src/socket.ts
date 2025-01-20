@@ -40,9 +40,3 @@ socket.on('exception', function(data) {
 socket.on('disconnect', function() {
 	console.log('Disconnected');
 });
-socket.on('createRoom', (e) => {
-	console.log('createRoom', e, socket)
-	// io.in("5991083c-67a3-4fff-abfd-b74efba33b3b").emit("eventsRoom", () => {
-	// 	console.log('Job')
-	// });
-})

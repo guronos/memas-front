@@ -11,10 +11,15 @@ import {socket} from "@/socket.ts";
 
 const createRoom = () => {
   const uid = getUUID();
-  socket.emit('createRoom', '5991083c-67a3-4fff-abfd-b74efba33b3b');
+  socket.emit('createRoom', uid);
   // socket.emit('events', { test: '42' })
 }
-
+socket.on('createRoom', (e) => {
+	console.log('createRoom', e, socket)
+	// io.in("5991083c-67a3-4fff-abfd-b74efba33b3b").emit("eventsRoom", () => {
+	// 	console.log('Job')
+	// });
+})
 </script>
 <style scoped>
 

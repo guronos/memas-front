@@ -1,5 +1,6 @@
 <template>
 <div>
+<input type="text" @input="name = $event.target.value">
   <button @click="createRoom">Новая комната</button>
   &nbsp;
   <input type="text" @input="joinRoomId = $event.target.value">
@@ -13,9 +14,10 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 const $router = useRouter()
 const joinRoomId = ref('')
+const name = ref('')
 const createRoom = () => {
   const uid = getUUID();
-  socket.emit('createRoom', uid);
+  socket.emit('createRoom', { uid, name: name.value });
   // socket.emit('events', { test: '42' })
 }
 const joinRoom = () => {

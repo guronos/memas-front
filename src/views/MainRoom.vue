@@ -1,6 +1,7 @@
 <template>
 <div>
   комната {{ $route.params.roomId }}
+  <button>Начать</button>
 </div>
 </template>
 <script setup lang="ts">

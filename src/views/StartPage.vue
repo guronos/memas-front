@@ -1,6 +1,6 @@
 <template>
 <div>
-<input type="text" @input="name = $event.target.value">
+<input type="text" @input="roomName = $event.target.value">
   <button @click="createRoom">Новая комната</button>
   &nbsp;
   <input type="text" @input="joinRoomId = $event.target.value">
@@ -12,12 +12,15 @@ import {getUUID} from "@/helpers/helpers.ts";
 import {socket} from "@/socket.ts";
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import {useRoomStore} from "@/stores/room.ts";
+
 const $router = useRouter()
+const $roomStore = useRoomStore()
+
 const joinRoomId = ref('')
-const name = ref('')
+const roomName = ref('')
 const createRoom = () => {
-  const uid = getUUID();
-  socket.emit('createRoom', { uid, name: name.value });
+  socket.emit('createRoom', { roomName: roomName.value });
   // socket.emit('events', { test: '42' })
 }
 const joinRoom = () => {
@@ -26,10 +29,15 @@ const joinRoom = () => {
 }
 socket.on('joinRoom', (e) => {
 	console.log('joinRoom', e, socket)
-  $router.push(`/${e.id}`)
+  $router.push(`/${e.roomData.roomUid}`)
+  $roomStore.setNewConnected(e.roomData)
 	// io.in("5991083c-67a3-4fff-abfd-b74efba33b3b").emit("eventsRoom", () => {
 	// 	console.log('Job')
 	// });
+})
+socket.on('joinedUser', (e) => {
+  console.log('joinedUser', e)
+  $roomStore.setUsersInRoom(e)
 })
 </script>
 <style scoped>

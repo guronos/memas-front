@@ -1,5 +1,6 @@
 import { reactive } from "vue";
 import { io } from "socket.io-client";
+import {serverURL} from "@/constants/connectConstants.ts";
 
 export const state = reactive({
   connected: false,
@@ -8,7 +9,8 @@ export const state = reactive({
 });
 
 // "undefined" means the URL will be computed from the `window.location` object
-const URL = process.env.NODE_ENV === "production" ? undefined : "http://localhost:3000";
+const URL = serverURL//process.env.NODE_ENV === "production" ? undefined : "http://localhost:3000";
+console.log('url', import.meta.env.VITE_SERVER_URL)//process.env.SERVER_URL);
 
 export const socket = io(URL, {
 	withCredentials: true,

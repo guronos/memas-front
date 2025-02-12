@@ -1,9 +1,9 @@
 <template>
 <div>
-<input type="text" @input="roomName = $event.target.value">
+<input type="text" @input="roomName = ($event.target as HTMLInputElement).value">
   <button @click="createRoom">Новая комната</button>
   &nbsp;
-  <input type="text" @input="joinRoomId = $event.target.value">
+  <input type="text" @input="joinRoomId = ($event.target as HTMLInputElement).value">
   <button @click="joinRoom">Присоединиться к существующей</button>
 </div>
 </template>

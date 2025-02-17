@@ -1,10 +1,16 @@
 <template>
-<div>
-<input type="text" @input="roomName = ($event.target as HTMLInputElement).value">
-  <button @click="createRoom">Новая комната</button>
-  &nbsp;
-  <input type="text" @input="joinRoomId = ($event.target as HTMLInputElement).value">
-  <button @click="joinRoom">Присоединиться к существующей</button>
+<div class="d-flex justify-center align-center" style="height: 100vh">
+  <div class="w-66">
+    <TheInput
+        v-model="roomName"
+    />
+    <v-btn @click="createRoom">Новая комната</v-btn>
+    &nbsp;
+    <TheInput
+        v-model="joinRoomId"
+    />
+    <v-btn @click="joinRoom">Присоединиться к существующей</v-btn>
+  </div>
 </div>
 </template>
 <script setup lang="ts">
@@ -13,6 +19,7 @@ import {socket} from "@/socket.ts";
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import {useRoomStore} from "@/stores/room.ts";
+import TheInput from "@/components/TheInput.vue";
 
 const $router = useRouter()
 const $roomStore = useRoomStore()

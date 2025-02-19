@@ -16,7 +16,7 @@
 <script setup lang="ts">
 import {getUUID} from "@/helpers/helpers.ts";
 import {socket} from "@/socket.ts";
-import { ref } from 'vue';
+import {ref, watch} from 'vue';
 import { useRouter } from 'vue-router';
 import {useRoomStore} from "@/stores/room.ts";
 import TheInput from "@/components/TheInput.vue";
@@ -26,8 +26,9 @@ const $roomStore = useRoomStore()
 
 const joinRoomId = ref('')
 const roomName = ref('')
-const createRoom = () => {
+const createRoom = async () => {
   socket.emit('createRoom', { roomName: roomName.value });
+  await fetch(API + 'auth/check', {method: 'POST'})
   // socket.emit('events', { test: '42' })
 }
 const joinRoom = () => {

@@ -23,7 +23,6 @@ import {serverURL} from "@/constants/connectConstants.ts";
 import {useGameStore} from "@/stores/game.ts";
 import type {IGameData} from "@/types/storeTypes/storeTypes.ts";
 
-
 const $route = useRoute()
 const $roomStore = useRoomStore()
 const $gameStore = useGameStore()

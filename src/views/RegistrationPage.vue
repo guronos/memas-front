@@ -17,6 +17,7 @@
                         :is="component.component"
                         v-model="userCreate[component.model as keyof I_UserCreate]"
                         v-bind="component.props"
+                        density="compact"
                     >
                         <div v-if="component.subComponents">
                             <component
@@ -49,88 +50,77 @@
 </template>
 
 <script lang="ts" setup>
-import {onMounted, reactive, ref, shallowRef} from 'vue'
+import { reactive, ref, shallowRef} from 'vue'
 import { getFetch } from '@/helpers/helpers.ts'
 import { useRouter } from 'vue-router'
 import type { I_UserCreate } from '@/types/user/userTypes.ts'
 import { useMainStore } from '@/stores/mainState'
 import { computed } from 'vue'
-import {VTextField, VRadio, VRadioGroup,} from "vuetify/components";
+import { VTextField, VRadio, VRadioGroup, VCheckbox } from "vuetify/components";
+import { VDateInput } from 'vuetify/labs/VDateInput'
 import {E_Sex} from "@/enums/userEnum.ts";
+import type {SubmitEventPromise} from "vuetify";
 
 const router = useRouter()
 const $mainStore = useMainStore()
 
 const loading = ref()
-const userCreateRef = ref<FormInstance>()
-const userCreate = reactive<I_UserCreate>({
+const userCreateRef = ref()
+const userCreate = ref<I_UserCreate>({
     email: '',
     phone: '',
     password: '',
     passwordRepeat: '',
     firstName: '',
     lastName: '',
-    middleName: '',
-    birthDate: '',
+    birthDate: null,
     sex: 0,
-    region: '',
-    city: '',
     isAcceptedCookies: false,
     isAcceptLicense: false
 })
 
-onMounted(() => {
-    //TODO rm to prod
-    (function devData () {
-        userCreate.email = 'testUser1@hmail.hru'
-        userCreate.phone = '79112223344'
-        userCreate.password = 'qwertyui'
-        userCreate.passwordRepeat = 'qwertyui'
-        userCreate.firstName = 'test'
-        userCreate.lastName = 'user'
-        userCreate.birthDate = "2024-07-01 00:00:00"
-        userCreate.sex = 0
-        userCreate.isAcceptedCookies = true
-        userCreate.isAcceptLicense = true
-    })()
-})
-
 const disabledBtn = computed(() => {
     return (
-        !userCreate.email ||
-        !userCreate.password ||
-        !userCreate.passwordRepeat ||
-        !userCreate.phone ||
-        !userCreate.firstName ||
-        !userCreate.lastName
+        !userCreate.value.email ||
+        !userCreate.value.password ||
+        !userCreate.value.passwordRepeat ||
+        !userCreate.value.phone ||
+        !userCreate.value.firstName ||
+        !userCreate.value.lastName
     )
 })
 
 const rules = {
-  required: (val) => !!val || 'Поле обязательно для заполнения',
-  validatePass: (value: string): string => {
+  required: (val: string): string | boolean => !!val || 'Поле обязательно для заполнения',
+  validatePass: (value: string): string | boolean => {
     if (!value) return 'Введите пароль!'
     if (value.length < 8) return 'Пароль должен состоять минимум из 8 символов!'
     if (value.length > 32) return 'Максимальная длинна пароля 32 символа!'
     if (value.match(/\W[^\\.?!]/gi))
       return 'Пароль может состоять только из латинских букв, цифр и символов ".?!"!'
-    return !!value
+    return true
   },
-  validatePassRepeat: (value: string): string => {
+  validatePassRepeat: (value: string): string | boolean => {
     if (!value) return 'Введите пароль!'
-    if (value !== userCreate.password) return 'Пароли не совпадают!'
-    return !!value
+    if (value !== userCreate.value.password) return 'Пароли не совпадают!'
+    return true
   },
+  emailValidate: (value: string): string | boolean => {
+    value = value.toLowerCase()
+      if (/^[\w.-]+@[\w.-]+\.[a-z]+$/i.test(value)) return true
+      return 'Введен недопустимый формат e-mail.'
+  },
+  requiredCheck: (val: boolean): boolean => val
 }
 
-const componentsData: I_ComponentData[] = shallowRef([
+const componentsData = [
     {
         component: VTextField,
         model: 'firstName',
         props: {
           label: 'Имя',
           variant: 'outlined',
-          density: 'compact',
+          // density: 'compact',
           rules: [rules.required]
         }
     },
@@ -140,19 +130,18 @@ const componentsData: I_ComponentData[] = shallowRef([
         props: {
           label: 'Фамилия',
           variant: 'outlined',
-          density: 'compact',
+          // density: 'compact',
           rules: [rules.required]
         }
     },
     {
-      // TODO регулярка проверки email
         component: VTextField,
         model: 'email',
         props: {
           label: 'Email',
           variant: 'outlined',
-          density: 'compact',
-          rules: [rules.required]
+          // density: 'compact',
+          rules: [rules.required, rules.emailValidate]
         }
     },
     {
@@ -161,7 +150,7 @@ const componentsData: I_ComponentData[] = shallowRef([
         props: {
           label: 'Телефон',
           variant: 'outlined',
-          density: 'compact',
+          // density: 'compact',
           rules: [rules.required]
         }
     },
@@ -171,7 +160,7 @@ const componentsData: I_ComponentData[] = shallowRef([
         props: {
           label: 'Пароль',
           variant: 'outlined',
-          density: 'compact',
+          // density: 'compact',
           type: 'password',
           'show-password': true,
           rules: [rules.validatePass]
@@ -183,30 +172,24 @@ const componentsData: I_ComponentData[] = shallowRef([
         props: {
           label: 'Повторите пароль',
           variant: 'outlined',
-          density: 'compact',
+          // density: 'compact',
           type: 'password',
           'show-password': true,
           rules: [rules.validatePassRepeat]
         }
     },
-    // {
-    //     component: 'v-date-picker',
-    //     parentProps: {
-    //         class: 'label_custom-color',
-    //         label: 'Дата рождения',
-    //         prop: 'birthDate'
-    //     },
-    //     model: 'birthDate',
-    //     props: {
-    //         id: 'v-date-picker',
-    //         class: 'input_color',
-    //         type: 'date',
-    //         format: 'DD.MM.YYYY',
-    //         'value-format': 'YYYY-MM-DD HH:mm:ss',
-    //         'aria-label': 'Выберите дату',
-    //         placeholder: 'Выберите дату'
-    //     }
-    // },
+    {
+        component: VDateInput,
+        model: 'birthDate',
+        props: {
+          label: 'Дата рождения',
+          variant: 'outlined',
+          clearable: true,
+          'prepend-icon': "",
+          'prepend-inner-icon': "$calendar",
+          rules: [rules.required]
+        }
+    },
     {
         component: VRadioGroup,
         model: 'sex',
@@ -232,41 +215,34 @@ const componentsData: I_ComponentData[] = shallowRef([
         }
       ]
     },
-    // {
-    //     component: 'v-checkbox',
-    //     parentProps: {
-    //         class: 'label_custom-color',
-    //         label: 'Согласен на предоставление Cookie',
-    //         prop: 'isAcceptedCookies'
-    //     },
-    //     model: 'isAcceptedCookies',
-    //     props: {
-    //         name: 'isAcceptedCookies'
-    //     }
-    // },
-    // {
-    //     component: 'v-checkbox',
-    //     parentProps: {
-    //         class: 'label_custom-color',
-    //         label: 'Согласен с условиями лицензии',
-    //         prop: 'isAcceptLicense'
-    //     },
-    //     model: 'isAcceptLicense',
-    //     props: {
-    //         name: 'isAcceptLicense'
-    //     }
-    // }
-])
+    {
+        component: VCheckbox,
+        model: 'isAcceptedCookies',
+        props: {
+            name: 'isAcceptedCookies',
+          label: 'Согласен на предоставление необходимых Cookie',
+          rules: [rules.requiredCheck]
+        }
+    },
+    {
+        component: VCheckbox,
+        model: 'isAcceptLicense',
+        props: {
+            name: 'isAcceptLicense',
+          label: 'Согласен с условиями лицензии',
+          rules: [rules.requiredCheck]
+        }
+    }
+]
 
-const submitForm = async (formEl: FormInstance | undefined) => {
-  console.log(formEl)
-    if (!formEl) return
+const submitForm = async (formEl: SubmitEventPromise) => {
+    // if (!formEl) return
     loading.value = true
 
   await formEl.then(async (result) => {
     if (result.valid) {
       console.log('valid', result)
-      // const response = await getFetch('/api/v1/users/create', userCreate)
+      const response = await getFetch('users/create', userCreate.value)
       if (response.statusCode === 200) {
         $mainStore.setAuthState(true)
         $mainStore.setUserData({ userId: response.data.id })
@@ -279,10 +255,24 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   loading.value = false
 }
 
-const resetForm = (formEl: FormInstance | undefined) => {
+const resetForm = (formEl: HTMLFormElement) => {
     if (!formEl) return
-    formEl.resetFields()
+    formEl.reset()
 }
+
+//TODO rm to prod
+(function devData () {
+  userCreate.value.email = 'testUser1@hmail.hru'
+  userCreate.value.phone = '79112223344'
+  userCreate.value.password = 'qwertyui'
+  userCreate.value.passwordRepeat = 'qwertyui'
+  userCreate.value.firstName = 'test'
+  userCreate.value.lastName = 'user'
+  userCreate.value.birthDate = new Date()
+  userCreate.value.sex = E_Sex.Male
+  userCreate.value.isAcceptedCookies = true
+  userCreate.value.isAcceptLicense = true
+})()
 </script>
 <style scoped lang="scss">
 .registration {

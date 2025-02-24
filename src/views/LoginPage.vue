@@ -7,95 +7,93 @@
                     <v-btn :text="'Регистрация'"
                 /></router-link>
             </div>
-            <div
-                ref="formRef"
-                class="demo-dynamic"
+            <v-form
+                validate-on="submit lazy" @submit.prevent="submitForm"
+                ref="form"
+                class="demo-dynamic form"
                 style="width: 360px"
             >
                 <div
                     class="label_custom-color"
                     prop="email"
                     label="Введите Email"
-                    :rules="rules"
                 >
                     <v-text-field
                         class="input_color"
                         v-model="loginData.email"
+
                     />
                 </div>
                 <div
                     class="label_custom-color"
                     :label="'Введите пароль'"
                     :prop="'password'"
-                    :rules="{
-                        message: 'Введите пароль',
-                        trigger: 'blur'
-                    }"
                 >
                     <v-text-field
                         v-model="loginData.password"
                         class="input_color"
+
                     />
                 </div>
                 <div class="flex-center login_actions">
-                    <div>
+                    <div class="d-flex justify-space-around">
                         <v-btn
                             class="btn"
                             :disabled="disabledBtn"
                             :color="disabledBtn ? '#4f9b9bba' : '#05f5f5'"
-                            @click="submitForm(formRef)"
+                            type="submit"
                             >Войти</v-btn
                         >
                         <v-btn
                             class="btn"
                             color="#890cb0"
                             :dark="true"
-                            @click="resetForm(formRef)"
+                            @click="resetForm(form)"
                             >Очистить</v-btn
                         >
                     </div>
                 </div>
-            </div>
+            </v-form>
         </div>
         <div class="title">MEMAS</div>
     </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, reactive, ref } from 'vue'
+import {computed, ref, shallowRef} from 'vue'
 import { getFetch } from '@/helpers/helpers.ts'
 import { useMainStore } from '@/stores/mainState'
 import { useRouter } from 'vue-router'
 import type { I_UserLogin } from '@/types/user/userTypes.ts'
+import type {SubmitEventPromise} from "vuetify";
 
 const router = useRouter()
 const mainStore = useMainStore()
-const formRef = ref()
-const loginData = reactive<I_UserLogin>({
+const form = ref()
+const loginData = ref<I_UserLogin>({
     password: '',
     email: ''
 })
-const rules = reactive({
-    email: [
-        {
-            type: 'email',
-            message: 'Введите корректный email!',
-            trigger: ['blur']
-        }
-    ],
-    password: [
-        { min: 6, max: 32, message: 'Длина должна быть от 6 до 32 символов', trigger: 'blur' }
-    ]
-})
-const submitForm = async (formEl: FormInstance | undefined) => {
-    if (!formEl) return
-    await formEl.validate(async (valid) => {
+const rules = {
+  required: (val: string): string | boolean => !!val || 'Поле обязательно для заполнения',
+  validatePass: (value: string): string | boolean => {
+    if (!value) return 'Введите пароль!'
+    if (value.length < 8) return 'Пароль должен состоять минимум из 8 символов!'
+    if (value.length > 32) return 'Максимальная длинна пароля 32 символа!'
+    if (value.match(/\W[^\\.?!]/gi))
+      return 'Пароль может состоять только из латинских букв, цифр и символов ".?!"!'
+    return !!value
+  }
+}
+const submitForm = async (formEl: SubmitEventPromise) => {
+  console.log(formEl)
+    await formEl.then(async (valid) => {
         if (valid) {
-            const data = await getFetch('/api/v1/auth', loginData)
+            const data = await getFetch('auth', loginData.value)
             const assess = data.statusCode === 200
             mainStore.setAuthState(assess)
             if (assess) {
-                mainStore.setUserData({ userData: data.userId })
+                mainStore.setUserData({ userId: data.userId })
                 await router.push('/')
             }
         } else {
@@ -104,11 +102,11 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     })
 }
 const disabledBtn = computed(() => {
-    return !loginData.email || !loginData.password
+    return !loginData.value.email || !loginData.value.password
 })
-const resetForm = (formEl: FormInstance | undefined) => {
-    if (!formEl) return
-    formEl.resetFields()
+const resetForm = (formEl: HTMLFormElement) => {
+  if (!formEl) return
+  formEl.reset()
 }
 </script>
 <style scoped lang="scss">
@@ -362,18 +360,18 @@ const resetForm = (formEl: FormInstance | undefined) => {
         }
     }
 }
-//.btn:before {
-//    content: '';
-//    position: absolute;
-//    top: 0;
-//    left: -100%;
-//    width: 100%;
-//    height: 100%;
-//    background: linear-gradient(120deg, transparent, rgba(146, 148, 248, 0.4), transparent);
-//    transition: all 650ms;
-//}
-//
-//.btn:hover:before {
-//    left: 100%;
-//}
+.btn:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(146, 148, 248, 0.4), transparent);
+    transition: all 650ms;
+}
+
+.btn:hover:before {
+    left: 20%;
+}
 </style>

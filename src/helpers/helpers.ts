@@ -1,4 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
+import {API} from "@/constants/connectConstants.ts";
+import {useMainStore} from "@/stores/mainState.ts";
+import {onMounted, ref} from "vue";
+
+export const errorMessage = ref('')
+export const rmMessage = () => errorMessage.value = ''
 
 export const getUUID = () => uuidv4()
 
@@ -27,7 +33,15 @@ export const getFetch = async (
         // credentials: 'include',
         body: payload ? JSON.stringify(payload) : undefined
     }
-    const rawData = await fetch(endpoint, options)
-    // if (rawData.status === 401) useMainStore().setAuthState(false)
-    return await rawData.json()
+    try {
+        const rawData = await fetch(API + endpoint, options)
+        // if (rawData.status === 401) useMainStore().setAuthState(false)
+        const data = await rawData.json()
+        if (data.statusCode !== 200 && data.message) errorMessage.value = data.message
+        return data
+    } catch (error) {
+        console.error(error)
+        // errorMessage.value = error
+    }
+
 }

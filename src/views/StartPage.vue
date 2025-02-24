@@ -28,7 +28,7 @@ const joinRoomId = ref('')
 const roomName = ref('')
 const createRoom = async () => {
   socket.emit('createRoom', { roomName: roomName.value });
-  await fetch(API + 'auth/check', {method: 'POST'})
+  // await fetch(API + 'auth/check', {method: 'POST'})
   // socket.emit('events', { test: '42' })
 }
 const joinRoom = () => {

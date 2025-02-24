@@ -8,6 +8,7 @@ import '@mdi/font/css/materialdesignicons.css'
 
 import App from './App.vue'
 import router from './router'
+import { ru } from 'vuetify/locale'
 
 const app = createApp(App)
 
@@ -22,6 +23,10 @@ const vuetify = createVuetify({
         VCard: {
             VBtn: { variant: 'outlined' },
         },
+    },
+    locale: {
+        locale: 'ru',
+        messages: { ru },
     },
 })
 

@@ -11,7 +11,12 @@
     </div>
   </div>
   комната {{ $roomStore.getRoomData }}
-  <v-btn @click="startGame">Начать</v-btn>
+  <div>
+    <div>
+      <div>Подключенные пользователи:</div>
+    </div>
+    <v-btn @click="startGame">Начать</v-btn>
+  </div>
 </div>
 </template>
 <script setup lang="ts">

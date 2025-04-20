@@ -1,3 +1,5 @@
+import type { StatusRoom } from '@/enums/StatusRoom';
+
 // ROOM
 export type TUsersData = Record<string, any>
 
@@ -12,9 +14,10 @@ export interface IRoomData {
     roomName: string;
     socketIds: string[];
     socketId: string;
-    questions: IQuestions[],
-    status: string;
-    createdAt: Date,
+    questions: IQuestions[];
+    status: StatusRoom;
+    createdAt: Date;
+    owner: string;
     usersData: {
         [key: string]: TUsersData,
     },
@@ -22,6 +25,8 @@ export interface IRoomData {
 
 //Game
 export interface IGameData {
+    round: number,
     question: IQuestions,
-    userImages: Record<string, string[]>
+    userImages: Record<string, string[]>,
+    imageSelected?: Record<string, string>
 }

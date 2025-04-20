@@ -33,18 +33,21 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from) => {
-  if (to.path === '/login') return true
-  const $mainStore = useMainStore()
-  if ($mainStore.getAuthState) return true
-  else if (to.path === '/registration') return true
-  const data = await $mainStore.checkAuthState()
-  const checkState = !!data
-  $mainStore.setAuthState(checkState)
-  if (checkState) {
-    return true
-  } else {
-    return '/login'
+  const publicPaths = ['/login', '/registration'];
+  if (publicPaths.includes(to.path)) return true;
+
+  const $mainStore = useMainStore();
+  if ($mainStore.getAuthState) return true;
+
+  try {
+    const data = await $mainStore.checkAuthState();
+    const checkState = !!data;
+    $mainStore.setAuthState(checkState);
+    return checkState ? true : '/login';
+  } catch (error) {
+    console.error('Error during auth state check:', error);
+    return '/login';
   }
-})
+});
 
 export default router

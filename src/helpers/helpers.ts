@@ -21,6 +21,7 @@ export const getFetch = async (
     //   if (!Object.keys(payload).length) payload = false
     //   if (Object.keys(query)) endpoint = setQueryParams(query, endpoint)
     // }
+    console.log(API)
     if (payload && method === 'GET') method = 'POST'
     const headers = new Headers()
     headers.append('Access-Control-Allow-Credentials', 'include')

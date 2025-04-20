@@ -37,7 +37,7 @@ socket.on('events', function(data) {
 	console.log('event', data);
 });
 socket.on('exception', function(data) {
-	console.log('eventEx', data);
+	console.log('Ошибка', data);
 });
 socket.on('disconnect', function() {
 	console.log('Disconnected');

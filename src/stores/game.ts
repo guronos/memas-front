@@ -11,9 +11,15 @@ export const useGameStore = defineStore('gameStore', () => {
         gameData.value = data
     }
 
+    const setGameImageData = (imageSelected: Record<string, string>) => {
+        console.log('imageSelected', imageSelected)
+        gameData.value!.imageSelected = imageSelected
+    }
+
     return {
         gameData,
         getGameData,
         setGameBaseData,
+        setGameImageData
     }
 })

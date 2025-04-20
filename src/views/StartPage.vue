@@ -35,19 +35,56 @@ const joinRoom = () => {
   console.dir(joinRoomId.value)
   socket.emit('joinRoom', joinRoomId.value);
 }
-socket.on('joinRoom', (e) => {
-	console.log('joinRoom', e, socket)
-  $router.push(`/${e.roomData.roomUid}`)
-  $roomStore.setNewConnected(e.roomData)
-	// io.in("5991083c-67a3-4fff-abfd-b74efba33b3b").emit("eventsRoom", () => {
-	// 	console.log('Job')
-	// });
-})
+
 socket.on('joinedUser', (e) => {
   console.log('joinedUser', e)
   $roomStore.setUsersInRoom(e)
 })
 </script>
 <style scoped>
+.d-flex {
+  display: flex;
+}
+.justify-center {
+  justify-content: center;
+}
+.align-center {
+  align-items: center;
+}
+.w-66 {
+  width: 66%;
+  max-width: 500px;
+  margin: 0 auto;
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
 
+/* Добавим стили для кнопок */
+v-btn {
+  background-color: #6200ea;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+v-btn:hover {
+  background-color: #3700b3;
+}
+
+/* Стили для инпутов */
+TheInput {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
 </style>

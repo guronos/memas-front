@@ -39,6 +39,7 @@ const joinRoom = () => {
 socket.on('joinedUser', (e) => {
   console.log('joinedUser', e)
   $roomStore.setUsersInRoom(e)
+  $roomStore.addUsers(e.usersData)
 })
 </script>
 <style scoped>

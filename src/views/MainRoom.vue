@@ -7,7 +7,7 @@
       <div class="spacer"></div>
       <div class="images">
         <div 
-          v-for="image in $gameStore.getGameData.userImages[$mainStore.userData.userId]" 
+          v-for="image in $gameStore.getGameData.userImages[$mainStore.userData.userId!]" 
           :key="image" 
           :class="['image-container', 
           { selected: selectedImage === image, 
@@ -74,7 +74,7 @@
         </div>
       </div>
       <div v-if="$roomStore.roomData?.selectedImage" class="w-100 d-flex justify-center">
-        <div v-for="(selectImageByUser, userId) in $roomStore.roomData.selectedImage[$gameStore.gameData?.round]" 
+        <div v-for="(selectImageByUser, userId) in $roomStore.roomData.selectedImage[$gameStore.gameData?.round!]" 
         :key="userId"
         class="d-flex flex-column align-center"
         >
@@ -171,6 +171,10 @@ socket.on('gameAction', async (eventData) => {
     $gameStore.setGameImageData(eventData.gameData.imageSelected)
   } else if (eventData.gameData.gameEvent === GameEvent.showImages) {
     console.log('show')
+    const imageData: Record<string, any> = {}
+    imageData[eventData.gameData.round] = eventData.gameData.imageSelected
+    $roomStore.setUserImages(imageData)
+    $gameStore.setGameEvent(eventData.gameData.gameEvent)
   }
 
   // image.value = `data:image/jpeg;base64,${eventData.gameData.img}`;
@@ -231,6 +235,7 @@ watch(() => $gameStore.getGameData?.imageSelected, (newVal: Record<string, strin
   align-items: flex-end;
   position: fixed;
   bottom: 0;
+  left: 0;
   width: 100%;
   background-color: rgba(0, 0, 0, 0.05);
   padding: 10px 0;

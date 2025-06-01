@@ -1,3 +1,4 @@
+import type { GameEvent } from '@/enums/GameEvent';
 import type { StatusRoom } from '@/enums/StatusRoom';
 
 // ROOM
@@ -18,6 +19,8 @@ export interface IRoomData {
     status: StatusRoom;
     createdAt: Date;
     owner: string;
+    ownerUserId: string;
+    selectedImage: Record<string, any>;
     usersData: {
         [key: string]: TUsersData,
     },
@@ -28,5 +31,6 @@ export interface IGameData {
     round: number,
     question: IQuestions,
     userImages: Record<string, string[]>,
-    imageSelected?: Record<string, string>
+    imageSelected?: Record<string, string>,
+    gameEvent: GameEvent
 }

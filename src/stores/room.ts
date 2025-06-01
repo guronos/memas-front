@@ -25,6 +25,9 @@ export const useRoomStore = defineStore('roomStore', () => {
     usersInRoom.value = newUserData.usersData
     usersInRoom.value.socketIds = newUserData.socketIds
   }
+  const setUserImages = (selectedImages: Record<string, any>) => roomData.value!.selectedImage = selectedImages
+
+  const addUsers = (users: Record<string, TUsersData>) => roomData.value!.usersData = users
 
   return {
     roomData,
@@ -32,6 +35,8 @@ export const useRoomStore = defineStore('roomStore', () => {
     getRoomData,
     getUsersInRoom,
     setUsersInRoom,
-    setStatus
+    setStatus,
+    setUserImages,
+    addUsers
   }
 })

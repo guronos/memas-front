@@ -1,6 +1,8 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import type {IGameData} from "@/types/storeTypes/storeTypes.ts";
+import type { StatusRoom } from '@/enums/StatusRoom';
+import type { GameEvent } from '@/enums/GameEvent';
 
 export const useGameStore = defineStore('gameStore', () => {
     const gameData = ref<IGameData | null>(null)
@@ -15,11 +17,13 @@ export const useGameStore = defineStore('gameStore', () => {
         console.log('imageSelected', imageSelected)
         gameData.value!.imageSelected = imageSelected
     }
+    const setGameEvent = (gameEvent: GameEvent) => gameData.value!.gameEvent = gameEvent
 
     return {
         gameData,
         getGameData,
         setGameBaseData,
-        setGameImageData
+        setGameImageData,
+        setGameEvent
     }
 })
